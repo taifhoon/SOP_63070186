@@ -55,6 +55,15 @@ public class ProductView extends VerticalLayout {
             };
             productList.setItems(nameProduct);
         });
+        productList.addValueChangeListener(e -> {
+            String nameProduct = productList.getValue();
+            Product p = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", nameProduct);
+            tname.setValue(p.getProductName());
+            numcost.setValue(p.getProductCost());
+            numprice.setValue(p.getProductPrice());
+            numprofit.setValue(p.getProductProfit());
+        });
+
         numprofit.addKeyPressListener(e -> {
             if (e.getKey().toString().equals("Enter")) {
                 double price = WebClient.create()
@@ -101,8 +110,9 @@ public class ProductView extends VerticalLayout {
                     .bodyToMono(double.class)
                     .block();
             numprice.setValue(price);
-            Product p = new Product(null, tname.getValue(), numcost.getValue(), numprofit.getValue(), numprice.getValue());
-            boolean check = (boolean)rabbitTemplate.convertSendAndReceive("ProductExchange", "update", p);
+            Product product = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", tname.getValue());
+            Product upProduct = new Product(product.get_id(), product.getProductName(), numcost.getValue(), numprofit.getValue(), numprice.getValue());
+            boolean check = (boolean)rabbitTemplate.convertSendAndReceive("ProductExchange", "update", upProduct);
             if (check){
                 Notification.show("Update Product Complete", 500, Notification.Position.BOTTOM_START);
             }
