@@ -1,7 +1,6 @@
 package com.example.sop_63070186.repository;
 
 import com.example.sop_63070186.pojo.Product;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
