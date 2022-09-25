@@ -57,11 +57,13 @@ public class ProductView extends VerticalLayout {
         });
         productList.addValueChangeListener(e -> {
             String nameProduct = productList.getValue();
-            Product p = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", nameProduct);
-            tname.setValue(p.getProductName());
-            numcost.setValue(p.getProductCost());
-            numprice.setValue(p.getProductPrice());
-            numprofit.setValue(p.getProductProfit());
+            if (nameProduct != null) {
+                Product p = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", nameProduct);
+                tname.setValue(p.getProductName());
+                numcost.setValue(p.getProductCost());
+                numprice.setValue(p.getProductPrice());
+                numprofit.setValue(p.getProductProfit());
+            }
         });
 
         numprofit.addKeyPressListener(e -> {
@@ -110,12 +112,20 @@ public class ProductView extends VerticalLayout {
                     .bodyToMono(double.class)
                     .block();
             numprice.setValue(price);
-            Product product = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", tname.getValue());
-            Product upProduct = new Product(product.get_id(), product.getProductName(), numcost.getValue(), numprofit.getValue(), numprice.getValue());
-            boolean check = (boolean)rabbitTemplate.convertSendAndReceive("ProductExchange", "update", upProduct);
-            if (check){
-                Notification.show("Update Product Complete", 500, Notification.Position.BOTTOM_START);
+            if (productList.getValue() != null) {
+                Product product = (Product) rabbitTemplate.convertSendAndReceive("ProductExchange", "getname", productList.getValue());
+                Product upProduct = new Product(product.get_id(), tname.getValue(), numcost.getValue(), numprofit.getValue(), numprice.getValue());
+                boolean check = (boolean) rabbitTemplate.convertSendAndReceive("ProductExchange", "update", upProduct);
+                if (check) {
+                    Notification.show("Update Product Complete", 500, Notification.Position.BOTTOM_START);
+                }
             }
+            List<Product> allProduct = (List<Product>) rabbitTemplate.convertSendAndReceive("ProductExchange", "getall", "");
+            List<String> nameProduct = new ArrayList<>();
+            for (Product p:allProduct) {
+                nameProduct.add(p.getProductName());
+            };
+            productList.setItems(nameProduct);
         });
         butDelete.addClickListener(e -> {
             String nameProduct = productList.getValue();
