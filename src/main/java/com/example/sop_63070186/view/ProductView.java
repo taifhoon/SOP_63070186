@@ -66,29 +66,46 @@ public class ProductView extends VerticalLayout {
             }
         });
 
-        numprofit.addKeyPressListener(e -> {
-            if (e.getKey().toString().equals("Enter")) {
-                double price = WebClient.create()
-                        .get()
-                        .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
-                        .retrieve()
-                        .bodyToMono(double.class)
-                        .block();
-                numprice.setValue(price);
-            }
+//        numprofit.addKeyPressListener(e -> {
+//            if (e.getKey().toString().equals("Enter")) {
+//                double price = WebClient.create()
+//                        .get()
+//                        .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
+//                        .retrieve()
+//                        .bodyToMono(double.class)
+//                        .block();
+//                numprice.setValue(price);
+//            }
+//        });
+//        numcost.addKeyPressListener(e -> {
+//            if (e.getKey().toString().equals("Enter")) {
+//                double price = WebClient.create()
+//                        .get()
+//                        .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
+//                        .retrieve()
+//                        .bodyToMono(double.class)
+//                        .block();
+//                numprice.setValue(price);
+//            }
+//        });
+        numprofit.addValueChangeListener(e -> {
+            double price = WebClient.create()
+                    .get()
+                    .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
+                    .retrieve()
+                    .bodyToMono(double.class)
+                    .block();
+            numprice.setValue(price);
         });
-        numcost.addKeyPressListener(e -> {
-            if (e.getKey().toString().equals("Enter")) {
-                double price = WebClient.create()
-                        .get()
-                        .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
-                        .retrieve()
-                        .bodyToMono(double.class)
-                        .block();
-                numprice.setValue(price);
-            }
+        numcost.addValueChangeListener(e -> {
+            double price = WebClient.create()
+                    .get()
+                    .uri("http://localhost:8080/getPrice/" + numcost.getValue() + "/" + numprofit.getValue())
+                    .retrieve()
+                    .bodyToMono(double.class)
+                    .block();
+            numprice.setValue(price);
         });
-
         butAdd.addClickListener(e -> {
             double price = WebClient.create()
                     .get()
